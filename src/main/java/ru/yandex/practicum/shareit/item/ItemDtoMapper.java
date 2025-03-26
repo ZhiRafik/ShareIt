@@ -2,9 +2,10 @@ package ru.yandex.practicum.shareit.item;
 
 public class ItemDtoMapper {
 
-    public Item mapToModel(ItemDto dto) {
+    public static Item mapToModel(ItemDto dto, Long ownerId) {
         Item item = Item.builder()
                 .itemId(dto.getItemId())
+                .ownerId(ownerId)
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .available(dto.getAvailable())
@@ -13,7 +14,7 @@ public class ItemDtoMapper {
         return item;
     }
 
-    public ItemDto mapToDto(Item item) {
+    public static ItemDto mapToDto(Item item) {
         ItemDto itemDto = ItemDto.builder()
                                 .itemId(item.getItemId())
                                 .name(item.getName())
