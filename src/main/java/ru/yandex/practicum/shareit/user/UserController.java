@@ -32,9 +32,9 @@ public class UserController {
     }
 
     @PatchMapping
-    public UserDto updateUser(@RequestBody User user,
+    public UserDto updateUser(@RequestBody UserDto dto,
                               @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
-        return service.updateUser(user, userId)
+        return service.updateUser(dto, userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 

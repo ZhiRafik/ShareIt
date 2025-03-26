@@ -10,8 +10,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
-    @Email @NotNull
+    @Email
     String email;
-    @NotNull
     String name;
+    //Long id; // доступ id нужно для тестов постман
 }

@@ -30,12 +30,17 @@ public class UserRepository {
         return Optional.of(users.get(id));
     }
 
-    public Optional<User> updateUser(User user, Long userId) {
+    public Optional<User> updateUser(UserDto dto, Long userId) {
         if (!users.containsKey(userId)) {
             return Optional.empty();
         }
-        user.setUserId(userId);
-        users.put(userId, user);
+        User user = users.get(userId);
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getName() != null) {
+            user.setName(dto.getName());
+        }
         return Optional.of(user);
     }
 

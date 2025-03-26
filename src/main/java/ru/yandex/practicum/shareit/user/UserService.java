@@ -36,13 +36,13 @@ public class UserService {
         return Optional.of(dto);
     }
 
-    public Optional<UserDto> updateUser(User user, Long userId) {
-        Optional<User> addedUser = repository.updateUser(user, userId);
+    public Optional<UserDto> updateUser(UserDto dto, Long userId) {
+        Optional<User> addedUser = repository.updateUser(dto, userId);
         if (addedUser.isEmpty()) {
             return Optional.empty();
         }
-        UserDto dto = UserDtoMapper.mapToDto(addedUser.get());
-        return Optional.of(dto);
+        UserDto dtoToReturn = UserDtoMapper.mapToDto(addedUser.get());
+        return Optional.of(dtoToReturn);
     }
 
     public Optional<UserDto> deleteUser(Long id) {

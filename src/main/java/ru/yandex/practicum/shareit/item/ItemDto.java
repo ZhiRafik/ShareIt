@@ -11,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
-    @NotNull
-    @Positive
     Long itemId;
     String name;
     String description;

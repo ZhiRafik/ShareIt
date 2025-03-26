@@ -6,6 +6,7 @@ public class UserDtoMapper {
         User user = User.builder()
                 .email(dto.getEmail())
                 .name(dto.getName())
+                //.userId(dto.getId())
                 .build();
         return user;
     }
@@ -14,6 +15,7 @@ public class UserDtoMapper {
         UserDto dto = UserDto.builder()
                 .email(user.getEmail())
                 .name(user.getName())
+                //.id(user.getUserId())
                 .build();
         return dto;
     }

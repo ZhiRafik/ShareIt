@@ -1,11 +1,12 @@
 package ru.yandex.practicum.shareit.item;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemService {
-    ItemDto addItem(ItemDto dto, Long ownerId);
+    Optional<ItemDto> addItem(ItemDto dto, Long ownerId);
 
-    ItemDto updateItem(ItemDto dto, Long itemId, Long userId);
+    Optional<ItemDto> updateItem(ItemDto dto, Long itemId, Long userId);
 
     List<ItemDto> getUserItems(Long userId);
 

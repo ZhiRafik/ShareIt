@@ -11,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
-    @NotNull
-    @Positive
     Long itemId;
     Long ownerId;
     String name;
