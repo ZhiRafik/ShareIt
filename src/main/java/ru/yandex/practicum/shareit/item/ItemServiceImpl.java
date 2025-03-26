@@ -2,7 +2,8 @@ package ru.yandex.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.shareit.user.UserService;
+import ru.yandex.practicum.shareit.Exception.NotFoundException;
+import ru.yandex.practicum.shareit.user.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,20 +12,33 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     public Optional<ItemDto> addItem(ItemDto dto, Long ownerId) {
-        if (userService.getUser(ownerId).isEmpty()) {
-            return Optional.empty();
+        if (userRepository.getUser(ownerId).isEmpty()) {
+            throw new NotFoundException("Non-existent user");
         }
         Item item = ItemDtoMapper.mapToModel(dto, ownerId);
         repository.addItem(item);
+        return Optional.of(ItemDtoMapper.mapToDto(item));
+    }
+
+    public Optional<ItemDto> getItem(Long itemId) {
+        Optional<Item> foundItem = repository.getItem(itemId);
+        if (foundItem.isEmpty()) {
+            return Optional.empty();
+        }
+        ItemDto dto = ItemDtoMapper.mapToDto(foundItem.get());
         return Optional.of(dto);
     }
 
 
     public Optional<ItemDto> updateItem(ItemDto dto, Long itemId, Long userId) {
-        Item item = repository.getItem(itemId);
+        Optional<Item> foundItem = repository.getItem(itemId);
+        if (foundItem.isEmpty()) {
+            throw new NotFoundException("Item is not found");
+        }
+        Item item = foundItem.get();
         if (item.getOwnerId() != userId) {
             return Optional.empty();
         }

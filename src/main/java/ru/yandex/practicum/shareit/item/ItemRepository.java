@@ -4,23 +4,27 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class ItemRepository {
     private final List<Item> items = new ArrayList<>();
+    private long id;
 
     public ItemDto addItem(Item item) {
         items.add(item);
+        item.setItemId(newId());
         return ItemDtoMapper.mapToDto(item);
     }
 
-    public Item getItem(Long itemId) {
+    public Optional<Item> getItem(Long itemId) {
         for (Item item : items) {
             if (item.getItemId() == itemId) {
-                return item;
+                return Optional.of(item);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public List<ItemDto> getUserItems(Long userId) {
@@ -31,10 +35,24 @@ public class ItemRepository {
     }
 
     public List<ItemDto> getItemsForRent(String text) {
-        return items.stream()
-                .filter(item -> item.getDescription().contains(text))
-                .filter(item -> item.getAvailable())
+        if (text.isBlank()) {
+            return List.of();
+        }
+        List<ItemDto> itemsByDescriptions = items.stream()
+                .filter(item -> item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .filter(Item::getAvailable)
                 .map(ItemDtoMapper::mapToDto)
                 .toList();
+        List<ItemDto> itemsByName = items.stream()
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()))
+                .filter(Item::getAvailable)
+                .map(ItemDtoMapper::mapToDto)
+                .toList();
+        return Stream.concat(itemsByDescriptions.stream(), itemsByName.stream())
+                                    .toList();
+    }
+
+    private Long newId() {
+        return ++id;
     }
 }

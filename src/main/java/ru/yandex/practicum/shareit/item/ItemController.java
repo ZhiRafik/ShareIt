@@ -28,13 +28,19 @@ public class ItemController {
                 .orElseThrow(() -> new NotFoundException("Item not found"));
     }
 
+    @GetMapping("/{itemId}")
+    public ItemDto getItem(@PathVariable Long itemId) {
+        return service.getItem(itemId)
+                .orElseThrow(() -> new NotFoundException("Item not found"));
+    }
+
     @GetMapping
     public List<ItemDto> getUserItems(@RequestHeader(name = "X-Sharer-User-Id") Long userId) {
         return service.getUserItems(userId);
     }
 
-    @GetMapping("/search?text={text}") // только доступные для аренды
-    public List<ItemDto> getItemsForRent(@PathVariable String text) {
+    @GetMapping("/search") // только доступные для аренды
+    public List<ItemDto> getItemsForRent(@RequestParam String text) {
         return service.getItemsForRent(text);
     }
 }

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.shareit.user;
 
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.shareit.Exception.ConflictException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public class UserRepository {
     }
 
     public Optional<User> getUser(Long id) {
-        return Optional.of(users.get(id));
+        return Optional.ofNullable(users.get(id));
     }
 
     public Optional<User> updateUser(UserDto dto, Long userId) {
@@ -36,6 +37,11 @@ public class UserRepository {
         }
         User user = users.get(userId);
         if (dto.getEmail() != null) {
+            for (User u : users.values()) {
+                if (u.getEmail().equals(dto.getEmail())) {
+                    throw new ConflictException("User with such an email already exists");
+                }
+            }
             user.setEmail(dto.getEmail());
         }
         if (dto.getName() != null) {

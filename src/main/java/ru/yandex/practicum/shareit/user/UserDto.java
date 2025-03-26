@@ -13,5 +13,5 @@ public class UserDto {
     @Email
     String email;
     String name;
-    //Long id; // доступ id нужно для тестов постман
+    Long id;
 }

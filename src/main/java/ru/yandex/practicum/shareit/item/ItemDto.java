@@ -1,7 +1,5 @@
 package ru.yandex.practicum.shareit.item;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
-    Long itemId;
+    Long id;
     String name;
     String description;
     Boolean available;

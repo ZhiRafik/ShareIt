@@ -1,13 +1,21 @@
 package ru.yandex.practicum.shareit.user;
 
+import ru.yandex.practicum.shareit.Exception.BadRequestException;
+
 public class UserDtoMapper {
 
     public static User mapToModel(UserDto dto) {
         User user = User.builder()
                 .email(dto.getEmail())
                 .name(dto.getName())
-                //.userId(dto.getId())
+                .userId(dto.getId())
                 .build();
+        if (user.getName() == null ||
+                user.getEmail() == null ||
+                user.getName().isBlank() ||
+                user.getEmail().isBlank()) {
+            throw new BadRequestException("Fields name and email cannot be empty");
+        }
         return user;
     }
 
@@ -15,7 +23,7 @@ public class UserDtoMapper {
         UserDto dto = UserDto.builder()
                 .email(user.getEmail())
                 .name(user.getName())
-                //.id(user.getUserId())
+                .id(user.getUserId())
                 .build();
         return dto;
     }

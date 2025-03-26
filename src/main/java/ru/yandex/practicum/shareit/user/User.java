@@ -11,8 +11,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     Long userId;
-    @Email @NotNull
+    @Email @NotBlank @NotNull
     String email;
-    @NotNull
+    @NotBlank @NotNull
     String name;
 }
