@@ -11,10 +11,15 @@ public class UserRepository {
     private HashMap<Long, User> users = new HashMap<>();
     private long id;
 
-    public User addUser(User user) {
+    public Optional<User> addUser(User user) {
+        for (User savedUser : users.values()) {
+            if (savedUser.getEmail().equals(user.getEmail())) {
+                return Optional.empty();
+            }
+        }
         user.setUserId(newId());
         users.put(user.getUserId(), user);
-        return user;
+        return Optional.of(user);
     }
 
     public List<User> getUsers() {
@@ -25,9 +30,13 @@ public class UserRepository {
         return Optional.of(users.get(id));
     }
 
-    public Optional<User> updateUser(User user) {
-        users.put(user.getUserId(), user);
-        return Optional.of(users.get(user.getUserId()));
+    public Optional<User> updateUser(User user, Long userId) {
+        if (!users.containsKey(userId)) {
+            return Optional.empty();
+        }
+        user.setUserId(userId);
+        users.put(userId, user);
+        return Optional.of(user);
     }
 
     public Optional<User> deleteUser(Long id) {

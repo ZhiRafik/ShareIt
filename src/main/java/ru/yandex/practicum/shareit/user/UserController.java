@@ -3,9 +3,10 @@ package ru.yandex.practicum.shareit.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.shareit.Exception.BadRequestException;
+import ru.yandex.practicum.shareit.Exception.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,27 +15,32 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
-        return service.addUser(user);
+    public UserDto addUser(@Valid @RequestBody User user) {
+        return service.addUser(user)
+                .orElseThrow(() -> new BadRequestException("User with such an email already exists"));
     }
 
     @GetMapping
-    public List<User> getUsers() {
+    public List<UserDto> getUsers() {
         return service.getUsers();
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUser(@PathVariable Long id) {
-        return service.getUser(id);
+    public UserDto getUser(@PathVariable Long id) {
+        return service.getUser(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    @PutMapping
-    public Optional<User> updateUser(@RequestBody User user) {
-        return service.updateUser(user);
+    @PatchMapping
+    public UserDto updateUser(@RequestBody User user,
+                              @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+        return service.updateUser(user, userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     @DeleteMapping("/{id}")
-    public Optional<User> deleteUser(@PathVariable Long id) {
-        return service.deleteUser(id);
+    public UserDto deleteUser(@PathVariable Long id) {
+        return service.deleteUser(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }
