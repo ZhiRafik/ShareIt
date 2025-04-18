@@ -1,6 +1,6 @@
 package ru.yandex.practicum.shareit.user;
 
-import ru.yandex.practicum.shareit.Exception.BadRequestException;
+import ru.yandex.practicum.shareit.exception.BadRequestException;
 
 public class UserDtoMapper {
 

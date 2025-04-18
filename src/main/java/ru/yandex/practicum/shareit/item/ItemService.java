@@ -8,9 +8,11 @@ public interface ItemService {
 
     Optional<ItemDto> updateItem(ItemDto dto, Long itemId, Long userId);
 
-    Optional<ItemDto> getItem(Long itemId);
+    Optional<ItemDtoWithComments> getItem(Long itemId);
 
-    List<ItemDto> getUserItems(Long userId);
+    Optional<Comment> addComment(Comment comment, Long itemId, Long userId);
+
+    List<ItemDtoWithBookingsAndComments> getUserItems(Long userId);
 
     List<ItemDto> getItemsForRent(String text);
 }

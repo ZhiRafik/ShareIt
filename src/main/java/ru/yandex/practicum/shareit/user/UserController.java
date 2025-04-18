@@ -3,8 +3,8 @@ package ru.yandex.practicum.shareit.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.shareit.Exception.ConflictException;
-import ru.yandex.practicum.shareit.Exception.NotFoundException;
+import ru.yandex.practicum.shareit.exception.ConflictException;
+import ru.yandex.practicum.shareit.exception.NotFoundException;
 
 import java.util.List;
 
@@ -15,8 +15,8 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public UserDto addUser(@Valid @RequestBody User user) {
-        return service.addUser(user)
+    public UserDto save(@Valid @RequestBody UserDto dto) {
+        return service.saveUser(dto)
                 .orElseThrow(() -> new ConflictException("User with such an email already exists"));
     }
 

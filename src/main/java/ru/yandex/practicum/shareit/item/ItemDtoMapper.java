@@ -1,13 +1,19 @@
 package ru.yandex.practicum.shareit.item;
 
-import ru.yandex.practicum.shareit.Exception.BadRequestException;
+import lombok.RequiredArgsConstructor;
+import ru.yandex.practicum.shareit.booking.Booking;
+import ru.yandex.practicum.shareit.exception.BadRequestException;
+import ru.yandex.practicum.shareit.user.UserRepository;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 public class ItemDtoMapper {
 
     public static Item mapToModel(ItemDto dto, Long ownerId) {
         Item item = Item.builder()
                 .itemId(dto.getId())
-                .ownerId(ownerId)
+                .owner(dto.getOwner())
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .available(dto.getAvailable())
@@ -24,13 +30,37 @@ public class ItemDtoMapper {
     }
 
     public static ItemDto mapToDto(Item item) {
-        ItemDto itemDto = ItemDto.builder()
+        return ItemDto.builder()
                 .id(item.getItemId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .timesUsed(item.getTimesUsed())
                 .build();
-        return itemDto;
+    }
+
+    public static ItemDtoWithBookings mapToDtoWithBookings(Item item, Booking prev, Booking next) {
+        return ItemDtoWithBookings.builder()
+                .id(item.getItemId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .timesUsed(item.getTimesUsed())
+                .prevBooking(prev)
+                .nextBooking(next)
+                .build();
+    }
+
+    public static ItemDtoWithBookingsAndComments mapToDtoWithBookingsAndComments(ItemDtoWithBookings item,
+                                                                                 List<Comment> comments) {
+        return ItemDtoWithBookingsAndComments.builder()
+                .comments(comments)
+                .build();
+    }
+
+    public static ItemDtoWithComments mapToDtoWithComments(Item item, List<Comment> comments) {
+        return ItemDtoWithComments.builder()
+                .comments(comments)
+                .build();
     }
 }
