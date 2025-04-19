@@ -13,8 +13,8 @@ public class BookingController {
     private final BookingService service;
 
     @PostMapping
-    public Booking addBooking(@Valid @RequestBody Booking booking) {
-        return service.addBooking(booking);
+    public Booking addBooking(@Valid @RequestBody BookingRequestDto bookingRequest) {
+        return service.addBooking(bookingRequest);
     }
 
     @PatchMapping("/{bookingId}?approved={approved}")

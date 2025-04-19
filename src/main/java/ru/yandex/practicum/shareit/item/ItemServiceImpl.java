@@ -9,8 +9,9 @@ import ru.yandex.practicum.shareit.user.User;
 import ru.yandex.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,7 +26,7 @@ public class ItemServiceImpl implements ItemService {
         if (userRepository.findById(ownerId).isEmpty()) {
             throw new NotFoundException("Non-existent user");
         }
-        Item item = ItemDtoMapper.mapToModel(dto, ownerId);
+        Item item = ItemDtoMapper.mapToModel(dto, userRepository.findById(ownerId).get());
         itemRepository.save(item);
         return Optional.of(ItemDtoMapper.mapToDto(item));
     }
@@ -64,13 +65,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public List<ItemDtoWithBookingsAndComments> getUserItems(Long userId) {
-        List<Item> items = itemRepository.findByUserId(userId);
-        List<ItemDtoWithBookings> itemsWithBookings = Collections.emptyList();
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<ItemDtoWithBookings> itemsWithBookings = new ArrayList<>();
 
         for (Item i : items) {
-            List<Booking> itemBookings = bookingRepository.findAllByItemId(i.getItemId());
-            Booking prev = itemBookings.getFirst(); // по умолчанию самая первая была до
-            Booking next = itemBookings.getLast(); // а самая последняя после
+            List<Booking> itemBookings = bookingRepository.findAllByItemId(i.getId());
+            if (itemBookings.isEmpty()) {
+                continue;
+            }
+            Booking prev = itemBookings.get(0); // по умолчанию самая первая была до
+            Booking next = itemBookings.get(itemBookings.size() - 1); // а самая последняя после
             for (Booking b : itemBookings) {
                 if (b.getEndTime().isBefore(LocalDateTime.now()) && // если бронь уже завершена
                         b.getEndTime().isAfter(prev.getEndTime())) { // и завершена после текущей последней
@@ -83,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
             itemsWithBookings.add(ItemDtoMapper.mapToDtoWithBookings(i, prev, next));
         }
 
-        List<ItemDtoWithBookingsAndComments> itemsWithBookingsAndComments = Collections.emptyList();
+        List<ItemDtoWithBookingsAndComments> itemsWithBookingsAndComments = new ArrayList<>();
 
         for (ItemDtoWithBookings i : itemsWithBookings) {
             List<Comment> comments = commentRepository.findAllByItemId(i.getId());
@@ -107,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Item is not found");
         }
         Item item = foundItem.get();
-        if (item.getOwner().getUserId() != userId) {
+        if (!Objects.equals(item.getOwner().getId(), userId)) {
             return Optional.empty();
         }
         if (dto.getDescription() != null) {

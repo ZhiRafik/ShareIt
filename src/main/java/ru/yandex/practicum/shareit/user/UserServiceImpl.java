@@ -2,6 +2,7 @@ package ru.yandex.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.shareit.exception.ConflictException;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ public class UserServiceImpl implements UserService {
 
     public Optional<UserDto> saveUser(UserDto dto) {
         Optional<User> user = repository.findByEmail(dto.getEmail());
-        if (user.isEmpty()) {
+        if (user.isPresent()) {
             return Optional.empty();
         }
         User savedUser = repository.save(UserDtoMapper.mapToModel(dto));
@@ -43,12 +44,15 @@ public class UserServiceImpl implements UserService {
         }
         User foundUser = neededUser.get();
         if (dto.getId() != null) {
-            foundUser.setUserId(dto.getId());
+            foundUser.setId(dto.getId());
         }
-        if (!dto.getName().isBlank()) {
+        if (dto.getName() != null) {
             foundUser.setName(dto.getName());
         }
-        if (!dto.getEmail().isBlank()) {
+        if (dto.getEmail() != null) {
+            if (repository.findByEmail(dto.getEmail()).isPresent()) {
+                throw new ConflictException("User with such an email already exists");
+            }
             foundUser.setEmail((dto.getEmail()));
         }
         repository.save(foundUser);

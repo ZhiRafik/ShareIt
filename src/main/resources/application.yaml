@@ -1,13 +1,16 @@
 spring:
-  application.name: later
+  application.name: shareIt
   main.banner-mode: OFF
   jpa:
+    hibernate:
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate.jdbc.time_zone: UTC
   datasource:
     username: "dbuser"
     password: "12345"
-    url: "jdbc:postgresql://localhost:5432/later"
+    url: "jdbc:postgresql://localhost:5432/shareIt"
     driver-class-name: "org.postgresql.Driver"
+
 

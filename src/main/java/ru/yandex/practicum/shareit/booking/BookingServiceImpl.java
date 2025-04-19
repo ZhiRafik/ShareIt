@@ -10,6 +10,7 @@ import ru.yandex.practicum.shareit.item.ItemRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -17,14 +18,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
 
-    public Booking addBooking(Booking booking) {
-        if (bookingRepository.findById(booking.getBookingId()).isPresent()) {
-            throw new ConflictException("Booking already created");
-        }
-        Item item = itemRepository.findById(booking.getItem().getItemId())
+    public Booking addBooking(BookingRequestDto bookingRequest) {
+        Item item = itemRepository.findById(bookingRequest.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item for booking is not found"));
+        Booking booking = Booking.builder()
+                .item(item)
+                .startTime(bookingRequest.getStart())
+                .endTime(bookingRequest.getEnd())
+                .build();
         List<Booking> bookingsForItem = bookingRepository
-                .findByItemIdAndStartBetween(item.getItemId(), booking.getStartTime(), booking.getEndTime());
+                .findByItemIdAndStartTimeBetween(item.getId(), booking.getStartTime(), booking.getEndTime());
         LocalDateTime start = booking.getStartTime();
         LocalDateTime end = booking.getEndTime();
         boolean booked = bookingsForItem.stream()
@@ -43,9 +46,9 @@ public class BookingServiceImpl implements BookingService {
     public Booking confirmStatus(Long bookingId, Boolean status, Long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not found"));
-        Item item = itemRepository.findById(booking.getItem().getItemId())
-                .orElseThrow(() -> new NotFoundException("Item with id" + booking.getItem().getItemId() + " not found"));
-        if (item.getOwner().getUserId() != userId) {
+        Item item = itemRepository.findById(booking.getItem().getId())
+                .orElseThrow(() -> new NotFoundException("Item with id" + booking.getItem().getId() + " not found"));
+        if (!Objects.equals(item.getOwner().getId(), userId)) {
             throw new BadRequestException("Only owner can confirm the booking of the item");
         }
         if (status) {
@@ -60,9 +63,9 @@ public class BookingServiceImpl implements BookingService {
     public Booking getInformation(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not found"));
-        Item item = itemRepository.findById(booking.getItem().getItemId())
-                .orElseThrow(() -> new NotFoundException("Item with id" + booking.getItem().getItemId() + " not found"));
-        if (booking.getUserId() != userId && item.getOwner().getUserId() != userId) {
+        Item item = itemRepository.findById(booking.getItem().getId())
+                .orElseThrow(() -> new NotFoundException("Item with id" + booking.getItem().getId() + " not found"));
+        if (!Objects.equals(booking.getId(), userId) && !Objects.equals(item.getOwner().getId(), userId)) {
             throw new BadRequestException("Only owner or booker can view info about the booking");
         } else {
             return booking;
@@ -70,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public List<Booking> getUserBookings(Long userId, String status) {
-        if (status == null || status.isEmpty() ||status.isBlank()) {
+        if (status == null || status.isBlank()) {
             return bookingRepository.findByUserIdOrderByStartTimeDesc(userId);
         } else {
             return bookingRepository.findByUserIdAndStatusOrderByStartTimeDesc(userId, status);
@@ -79,23 +82,23 @@ public class BookingServiceImpl implements BookingService {
 
     public List<Booking> getItemsBookings(Long userId, String status) {  // Получение списка бронирований для всех// вещей текущего пользователя
         List<Booking> bookings = null;
-        if (status == null || status.isEmpty() ||status.isBlank()) {
-            List<Item> items = itemRepository.findAllByUserId(userId);
+        if (status == null || status.isBlank()) {
+            List<Item> items = itemRepository.findAllByOwnerId(userId);
             if (items.isEmpty()) {
                 throw new NotFoundException("User doesn't have any items");
             }
             for (Item i : items) {
-                List<Booking> bookingsForItem = bookingRepository.findAllByItemId(i.getItemId());
+                List<Booking> bookingsForItem = bookingRepository.findAllByItemId(i.getId());
                 bookings.addAll(bookingsForItem);
             }
             return bookings;
         } else {
-            List<Item> items = itemRepository.findAllByUserId(userId);
+            List<Item> items = itemRepository.findAllByOwnerId(userId);
             if (items.isEmpty()) {
                 throw new NotFoundException("User doesn't have any items");
             }
             for (Item i : items) {
-                List<Booking> bookingsForItem = bookingRepository.findAllByUserIdAndStatus(i.getItemId(), status);
+                List<Booking> bookingsForItem = bookingRepository.findAllByUserIdAndStatus(i.getId(), status);
                 bookings.addAll(bookingsForItem);
             }
             return bookings;

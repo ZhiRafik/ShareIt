@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.List;
 
 public interface BookingService {
-    Booking addBooking(Booking booking);
+    Booking addBooking(BookingRequestDto bookingRequest);
 
     Booking confirmStatus(Long bookingId, Boolean status, Long userId);
 
