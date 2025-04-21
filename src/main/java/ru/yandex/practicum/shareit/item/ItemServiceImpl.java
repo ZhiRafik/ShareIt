@@ -71,6 +71,7 @@ public class ItemServiceImpl implements ItemService {
         for (Item i : items) {
             List<Booking> itemBookings = bookingRepository.findAllByItemId(i.getId());
             if (itemBookings.isEmpty()) {
+                itemsWithBookings.add(ItemDtoMapper.mapToDtoWithBookings(i, null, null));
                 continue;
             }
             Booking prev = itemBookings.get(0); // по умолчанию самая первая была до
@@ -86,7 +87,6 @@ public class ItemServiceImpl implements ItemService {
             }
             itemsWithBookings.add(ItemDtoMapper.mapToDtoWithBookings(i, prev, next));
         }
-
         List<ItemDtoWithBookingsAndComments> itemsWithBookingsAndComments = new ArrayList<>();
 
         for (ItemDtoWithBookings i : itemsWithBookings) {
