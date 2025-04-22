@@ -2,7 +2,7 @@ package ru.yandex.practicum.shareit.booking;
 
 public enum Status {
     WAITING,
-    CONFIRMED,
+    APPROVED,
     REJECTED,
     CURRENT,
     PAST,

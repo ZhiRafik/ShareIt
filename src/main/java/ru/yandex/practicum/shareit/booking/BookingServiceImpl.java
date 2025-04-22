@@ -3,10 +3,11 @@ package ru.yandex.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.shareit.exception.BadRequestException;
-import ru.yandex.practicum.shareit.exception.ConflictException;
 import ru.yandex.practicum.shareit.exception.NotFoundException;
 import ru.yandex.practicum.shareit.item.Item;
 import ru.yandex.practicum.shareit.item.ItemRepository;
+import ru.yandex.practicum.shareit.user.User;
+import ru.yandex.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,26 +18,42 @@ import java.util.Objects;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
-    public Booking addBooking(BookingRequestDto bookingRequest) {
+    public Booking addBooking(BookingRequestDto bookingRequest, Long userId) {
+        User booker = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User is not found"));
         Item item = itemRepository.findById(bookingRequest.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item for booking is not found"));
+        if (!item.getAvailable()) {
+            throw new BadRequestException("Item is not available");
+        }
+        if (bookingRequest.getEnd().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Booking ende in the past");
+        }
+        if (bookingRequest.getEnd().isEqual(bookingRequest.getStart())) {
+            throw new BadRequestException("Booking starts and ends simultaneously");
+        }
+        if (bookingRequest.getEnd().isBefore(bookingRequest.getStart())) {
+            throw new BadRequestException("Booking ends before it starts");
+        }
         Booking booking = Booking.builder()
                 .item(item)
-                .startTime(bookingRequest.getStart())
-                .endTime(bookingRequest.getEnd())
+                .booker(booker)
+                .start(bookingRequest.getStart())
+                .end(bookingRequest.getEnd())
                 .build();
         List<Booking> bookingsForItem = bookingRepository
-                .findByItemIdAndStartTimeBetween(item.getId(), booking.getStartTime(), booking.getEndTime());
-        LocalDateTime start = booking.getStartTime();
-        LocalDateTime end = booking.getEndTime();
+                .findByItemIdAndStartBetween(item.getId(), booking.getStart(), booking.getEnd());
+        LocalDateTime start = booking.getStart();
+        LocalDateTime end = booking.getEnd();
         boolean booked = bookingsForItem.stream()
-                .noneMatch(b ->
-                        !(b.getStartTime().isAfter(start) && b.getStartTime().isBefore(end))
-                        && !(b.getEndTime().isAfter(start) && b.getEndTime().isBefore(end))
+                .anyMatch(existingBooking ->
+                        (start.isBefore(existingBooking.getEnd())
+                                && end.isAfter(existingBooking.getStart()))
                 );
         if (booked) {
-            throw new ConflictException("Item is already booked at this time");
+            throw new BadRequestException("Item is already booked at this time");
         } else {
             booking.setStatus(Status.WAITING);
             return bookingRepository.save(booking);
@@ -52,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("Only owner can confirm the booking of the item");
         }
         if (status) {
-            booking.setStatus(Status.CONFIRMED);
+            booking.setStatus(Status.APPROVED);
         } else {
             booking.setStatus(Status.REJECTED);
         }
@@ -65,7 +82,8 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not found"));
         Item item = itemRepository.findById(booking.getItem().getId())
                 .orElseThrow(() -> new NotFoundException("Item with id" + booking.getItem().getId() + " not found"));
-        if (!Objects.equals(booking.getId(), userId) && !Objects.equals(item.getOwner().getId(), userId)) {
+        if (!Objects.equals(booking.getBooker().getId(), userId)
+                && !Objects.equals(item.getOwner().getId(), userId)) {
             throw new BadRequestException("Only owner or booker can view info about the booking");
         } else {
             return booking;
@@ -74,9 +92,9 @@ public class BookingServiceImpl implements BookingService {
 
     public List<Booking> getUserBookings(Long userId, String status) {
         if (status == null || status.isBlank()) {
-            return bookingRepository.findByUserIdOrderByStartTimeDesc(userId);
+            return bookingRepository.findByBooker_IdOrderByStartDesc(userId);
         } else {
-            return bookingRepository.findByUserIdAndStatusOrderByStartTimeDesc(userId, status);
+            return bookingRepository.findByBooker_IdAndStatusOrderByStartDesc(userId, status);
         }
     }
 
@@ -98,7 +116,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new NotFoundException("User doesn't have any items");
             }
             for (Item i : items) {
-                List<Booking> bookingsForItem = bookingRepository.findAllByUserIdAndStatus(i.getId(), status);
+                List<Booking> bookingsForItem = bookingRepository.findAllByBooker_IdAndStatus(i.getId(), status);
                 bookings.addAll(bookingsForItem);
             }
             return bookings;

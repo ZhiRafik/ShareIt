@@ -17,6 +17,6 @@ public class ItemDtoWithBookings {
     String description;
     Boolean available;
     Long timesUsed;
-    Booking prevBooking;
+    Booking lastBooking;
     Booking nextBooking;
 }

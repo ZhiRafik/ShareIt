@@ -1,7 +1,6 @@
 package ru.yandex.practicum.shareit.item;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.shareit.user.User;
@@ -20,9 +19,9 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String text;
-    @NotNull @ManyToOne @JoinColumn(name = "item_id")
+    @ManyToOne @JoinColumn(name = "item_id")
     Item item;
-    @NotNull @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne @JoinColumn(name = "user_id")
     User author;
     LocalDateTime created;
 }

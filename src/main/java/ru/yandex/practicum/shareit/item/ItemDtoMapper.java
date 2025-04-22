@@ -39,14 +39,14 @@ public class ItemDtoMapper {
                 .build();
     }
 
-    public static ItemDtoWithBookings mapToDtoWithBookings(Item item, Booking prev, Booking next) {
+    public static ItemDtoWithBookings mapToDtoWithBookings(Item item, Booking last, Booking next) {
         return ItemDtoWithBookings.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .timesUsed(item.getTimesUsed())
-                .prevBooking(prev)
+                .lastBooking(last)
                 .nextBooking(next)
                 .build();
     }
@@ -60,6 +60,20 @@ public class ItemDtoMapper {
                 .available(item.getAvailable())
                 .timesUsed(item.getTimesUsed())
                 .comments(comments)
+                .build();
+    }
+
+    public static ItemDtoWithBookingsAndComments mapToDtoWithBookingsAndComments(Item item, List<Comment> comments,
+                                                                                 Booking last, Booking next) {
+        return ItemDtoWithBookingsAndComments.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .timesUsed(item.getTimesUsed())
+                .comments(comments)
+                .nextBooking(next)
+                .lastBooking(last)
                 .build();
     }
 

@@ -41,9 +41,9 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("User not found");
         }
 
-        List<Booking> itemBookings = bookingRepository.findAllByItemIdAndUserId(itemId, userId);
+        List<Booking> itemBookings = bookingRepository.findAllByItemIdAndBooker_Id(itemId, userId);
         for (Booking b : itemBookings) {
-            if (b.getEndTime().isBefore(LocalDateTime.now())) {
+            if (b.getEnd().isBefore(LocalDateTime.now())) {
                 comment.setItem(item.get());
                 comment.setAuthor(author.get());
                 commentRepository.save(comment);
@@ -54,14 +54,24 @@ public class ItemServiceImpl implements ItemService {
         return Optional.empty();
     }
 
-    public Optional<ItemDtoWithComments> getItem(Long itemId) {
+    public Optional<ItemDtoWithBookingsAndComments> getItem(Long itemId) {
         Optional<Item> foundItem = itemRepository.findById(itemId);
         if (foundItem.isEmpty()) {
             return Optional.empty();
         }
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
+        List<Booking> itemBookings = bookingRepository.findAllByItemId(itemId);
 
-        return Optional.of(ItemDtoMapper.mapToDtoWithComments(foundItem.get(), comments));
+        if (itemBookings.isEmpty()) {
+            return Optional.of(
+                    ItemDtoMapper.mapToDtoWithBookingsAndComments(
+                            foundItem.get(), comments, null, null));
+        }
+        Booking prevBooking = itemBookings.get(0);
+        Booking nextBooking = itemBookings.get(itemBookings.size() - 1);
+        return Optional.of(
+                ItemDtoMapper.mapToDtoWithBookingsAndComments(
+                        foundItem.get(), comments, prevBooking, nextBooking));
     }
 
     public List<ItemDtoWithBookingsAndComments> getUserItems(Long userId) {
@@ -77,11 +87,11 @@ public class ItemServiceImpl implements ItemService {
             Booking prev = itemBookings.get(0); // по умолчанию самая первая была до
             Booking next = itemBookings.get(itemBookings.size() - 1); // а самая последняя после
             for (Booking b : itemBookings) {
-                if (b.getEndTime().isBefore(LocalDateTime.now()) && // если бронь уже завершена
-                        b.getEndTime().isAfter(prev.getEndTime())) { // и завершена после текущей последней
+                if (b.getEnd().isBefore(LocalDateTime.now()) && // если бронь уже завершена
+                        b.getEnd().isAfter(prev.getEnd())) { // и завершена после текущей последней
                     prev = b;
-                } else if (b.getStartTime().isAfter(LocalDateTime.now()) && // если бронь ещё не началась
-                        b.getStartTime().isBefore(next.getStartTime())) { // и начнется раньше текущей следущей
+                } else if (b.getStart().isAfter(LocalDateTime.now()) && // если бронь ещё не началась
+                        b.getStart().isBefore(next.getStart())) { // и начнется раньше текущей следущей
                     next = b;
                 }
             }
@@ -99,8 +109,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public List<ItemDto> getItemsForRent(String text) {
+        if (text == null || text.isBlank()) {
+            return List.of(); // или выбросить BadRequestException, но по тестам надо вернуть
+        }
         List<Item> items = itemRepository.findByDescriptionContainingIgnoreCase(text);
         return items.stream()
+                .filter(Item::getAvailable)
                 .map(ItemDtoMapper::mapToDto)
                 .toList();
     }

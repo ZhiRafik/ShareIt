@@ -8,7 +8,7 @@ public interface ItemService {
 
     Optional<ItemDto> updateItem(ItemDto dto, Long itemId, Long userId);
 
-    Optional<ItemDtoWithComments> getItem(Long itemId);
+    Optional<ItemDtoWithBookingsAndComments> getItem(Long itemId);
 
     Optional<Comment> addComment(Comment comment, Long itemId, Long userId);
 

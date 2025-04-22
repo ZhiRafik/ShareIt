@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.shareit.item.Item;
+import ru.yandex.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
@@ -21,9 +22,11 @@ public class Booking {
     Long id;
     @NotNull @ManyToOne @JoinColumn(name = "item_id")
     Item item;
-    Long userId;
-    LocalDateTime startTime;
-    LocalDateTime endTime;
+    @NotNull @ManyToOne @JoinColumn(name = "booker_id")
+    User booker;
+    LocalDateTime start;
+    @Column(name = "\"end\"")
+    LocalDateTime end;
     @Enumerated(EnumType.STRING)
     Status status;
 }

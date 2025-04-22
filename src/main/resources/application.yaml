@@ -12,5 +12,3 @@ spring:
     password: "12345"
     url: "jdbc:postgresql://localhost:5432/shareit"
     driver-class-name: "org.postgresql.Driver"
-
-

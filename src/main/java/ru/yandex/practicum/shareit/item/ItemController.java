@@ -3,6 +3,7 @@ package ru.yandex.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.shareit.exception.BadRequestException;
 import ru.yandex.practicum.shareit.exception.NotFoundException;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ItemController {
                               @PathVariable Long itemId,
                               @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
         return service.addComment(comment, itemId, userId)
-                .orElseThrow(() -> new NotFoundException("Item with ended booking not found"));
+                .orElseThrow(() -> new BadRequestException("Item with ended booking not found"));
     }
 
     @PatchMapping("/{itemId}")
@@ -42,7 +43,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoWithComments getItem(@PathVariable Long itemId) {
+    public ItemDtoWithBookingsAndComments getItem(@PathVariable Long itemId) {
         return service.getItem(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
     }

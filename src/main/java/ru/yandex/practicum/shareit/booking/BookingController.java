@@ -13,15 +13,16 @@ public class BookingController {
     private final BookingService service;
 
     @PostMapping
-    public Booking addBooking(@Valid @RequestBody BookingRequestDto bookingRequest) {
-        return service.addBooking(bookingRequest);
+    public Booking addBooking(@Valid @RequestBody BookingRequestDto bookingRequest,
+                              @RequestHeader (name = "X-Sharer-User-Id") Long userId) {
+        return service.addBooking(bookingRequest, userId);
     }
 
-    @PatchMapping("/{bookingId}?approved={approved}")
+    @PatchMapping("/{bookingId}")
     public Booking confirmStatus(@PathVariable Long bookingId,
-                                  @PathVariable Boolean status,
+                                  @RequestParam Boolean approved,
                                   @RequestHeader (name = "X-Sharer-User-Id") Long userId) {
-        return service.confirmStatus(bookingId, status, userId);
+        return service.confirmStatus(bookingId, approved, userId);
     }
 
     @GetMapping("/{bookingId}")
@@ -30,15 +31,15 @@ public class BookingController {
         return service.getInformation(bookingId, userId);
     }
 
-    @GetMapping("/?state={state}")
-    public List<Booking> getInformation(@PathVariable(required = false) String status,
+    @GetMapping
+    public List<Booking> getInformation(@RequestParam(required = false) String state,
                                         @RequestHeader (name = "X-Sharer-User-Id") Long userId) {
-        return service.getUserBookings(userId, status);
+        return service.getUserBookings(userId, state);
     }
 
-    @GetMapping("/owner?state={state}")
-    public List<Booking> getItemsBookings(@PathVariable(required = false) String status,
+    @GetMapping("/owner")
+    public List<Booking> getItemsBookings(@RequestParam(required = false) String state,
                                         @RequestHeader (name = "X-Sharer-User-Id") Long userId) {
-        return service.getItemsBookings(userId, status);
+        return service.getItemsBookings(userId, state);
     }
 }

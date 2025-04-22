@@ -20,6 +20,6 @@ public class ItemDtoWithBookingsAndComments {
     Boolean available;
     Long timesUsed;
     List<Comment> comments;
-    Booking prevBooking;
+    Booking lastBooking;
     Booking nextBooking;
 }
