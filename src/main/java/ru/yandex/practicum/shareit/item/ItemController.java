@@ -13,10 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService service;
+    private final String xUserId = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto addItem(@Valid @RequestBody ItemDto dto,
-                           @RequestHeader(name = "X-Sharer-User-Id") Long ownerId) {
+                           @RequestHeader(name = xUserId) Long ownerId) {
         return service.addItem(dto, ownerId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
     }
@@ -24,7 +25,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public Comment addComment(@Valid @RequestBody Comment comment,
                               @PathVariable Long itemId,
-                              @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+                              @RequestHeader(name = xUserId) Long userId) {
         return service.addComment(comment, itemId, userId)
                 .orElseThrow(() -> new BadRequestException("Item with ended booking not found"));
     }
@@ -32,13 +33,13 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@Valid @RequestBody ItemDto dto,
                               @PathVariable Long itemId,
-                              @RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+                              @RequestHeader(name = xUserId) Long userId) {
         return service.updateItem(dto, itemId, userId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
     }
 
     @GetMapping
-    public List<ItemDtoWithBookingsAndComments> getUserItems(@RequestHeader(name = "X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoWithBookingsAndComments> getUserItems(@RequestHeader(name = xUserId) Long userId) {
         return service.getUserItems(userId);
     }
 
