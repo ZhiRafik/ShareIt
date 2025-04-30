@@ -1,21 +1,27 @@
 package ru.yandex.practicum.shareit.item;
 
+import lombok.*;
+import ru.yandex.practicum.shareit.user.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
+@NoArgsConstructor // чтобы Hibernate мог создать объект
+@AllArgsConstructor // чтобы Builder работы при NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "items")
 public class Item {
-    Long itemId;
-    Long ownerId;
-    @NotBlank @NotNull
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @NotNull @ManyToOne @JoinColumn(name = "owner_id")
+    User owner;
+    @NotBlank @Column(nullable = false)
     String name;
-    @NotBlank @NotNull
+    @NotBlank @Column(nullable = false)
     String description;
     @NotNull
     Boolean available;

@@ -1,18 +1,22 @@
 package ru.yandex.practicum.shareit.user;
 
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
+@NoArgsConstructor // чтобы Hibernate мог создать объект
+@AllArgsConstructor // чтобы Builder работы при NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "users")
 public class User {
-    Long userId;
-    @Email @NotBlank @NotNull
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Email @NotBlank @NotNull @Column(length = 512, nullable = false)
     String email;
-    @NotBlank @NotNull
+    @NotBlank @NotNull @Column(unique = true)
     String name;
 }

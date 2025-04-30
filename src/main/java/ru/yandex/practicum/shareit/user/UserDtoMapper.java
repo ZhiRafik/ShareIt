@@ -1,6 +1,6 @@
 package ru.yandex.practicum.shareit.user;
 
-import ru.yandex.practicum.shareit.Exception.BadRequestException;
+import ru.yandex.practicum.shareit.exception.BadRequestException;
 
 public class UserDtoMapper {
 
@@ -8,7 +8,7 @@ public class UserDtoMapper {
         User user = User.builder()
                 .email(dto.getEmail())
                 .name(dto.getName())
-                .userId(dto.getId())
+                .id(dto.getId())
                 .build();
         if (user.getName() == null ||
                 user.getEmail() == null ||
@@ -23,7 +23,7 @@ public class UserDtoMapper {
         UserDto dto = UserDto.builder()
                 .email(user.getEmail())
                 .name(user.getName())
-                .id(user.getUserId())
+                .id(user.getId())
                 .build();
         return dto;
     }
