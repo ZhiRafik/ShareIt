@@ -11,7 +11,7 @@ import shareit.client.BaseClient;
 
 @Service
 public class RequestClient extends BaseClient {
-    private final static String API_PREFIX = "/requests";
+    private static final String API_PREFIX = "/requests";
 
     @Autowired
     public RequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {

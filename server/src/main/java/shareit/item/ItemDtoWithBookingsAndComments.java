@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import shareit.booking.Booking;
-import shareit.user.User;
 
 import java.util.List;
 

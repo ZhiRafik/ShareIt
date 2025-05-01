@@ -4,6 +4,9 @@ server:
 spring:
   application.name: shareIt
   main.banner-mode: OFF
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   jpa:
     hibernate:
       ddl-auto: create
@@ -13,5 +16,5 @@ spring:
   datasource:
     username: "dbuser"
     password: "12345"
-    url: "jdbc:postgresql://localhost:5432/shareit"
+    url: "jdbc:postgresql://localhost:5432/shareIt"
     driver-class-name: "org.postgresql.Driver"

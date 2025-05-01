@@ -5,5 +5,11 @@ spring:
     name: shareIt
   main:
     banner-mode: OFF
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 shareit-server:
     url: http://localhost:9090
+logging:
+  level:
+    org.springframework.web.client.RestTemplate: DEBUG
