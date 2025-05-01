@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Email @NotBlank @NotNull @Column(length = 512, nullable = false)
+    @Email @NotBlank @Column(length = 512, nullable = false)
     String email;
     @NotBlank @NotNull @Column(unique = true)
     String name;
