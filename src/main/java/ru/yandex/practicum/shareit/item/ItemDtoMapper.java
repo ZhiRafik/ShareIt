@@ -18,6 +18,7 @@ public class ItemDtoMapper {
                 .description(dto.getDescription())
                 .available(dto.getAvailable())
                 .timesUsed(dto.getTimesUsed())
+                .requestId(dto.getRequestId())
                 .build();
         if (item.getAvailable() == null ||
                 item.getDescription() == null ||
@@ -36,6 +37,7 @@ public class ItemDtoMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .timesUsed(item.getTimesUsed())
+                .requestId(item.getRequestId())
                 .build();
     }
 

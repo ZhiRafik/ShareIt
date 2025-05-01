@@ -26,4 +26,6 @@ public class Item {
     @NotNull
     Boolean available;
     Long timesUsed;
+    @Column(name = "request_id")
+    Long requestId;
 }

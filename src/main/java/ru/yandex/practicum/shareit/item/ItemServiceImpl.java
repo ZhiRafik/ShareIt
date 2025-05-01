@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.shareit.booking.Booking;
 import ru.yandex.practicum.shareit.booking.BookingRepository;
 import ru.yandex.practicum.shareit.exception.NotFoundException;
+import ru.yandex.practicum.shareit.request.RequestRepository;
 import ru.yandex.practicum.shareit.user.User;
 import ru.yandex.practicum.shareit.user.UserRepository;
 
@@ -21,11 +22,18 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
     public Optional<ItemDto> addItem(ItemDto dto, Long ownerId) {
         if (userRepository.findById(ownerId).isEmpty()) {
             throw new NotFoundException("Non-existent user");
         }
+
+        if (dto.getRequestId() != null &&
+            requestRepository.findById(dto.getRequestId()).isEmpty()) {
+            throw new NotFoundException("Request with id " + dto.getRequestId() + " not found");
+        }
+
         Item item = ItemDtoMapper.mapToModel(dto, userRepository.findById(ownerId).get());
         itemRepository.save(item);
         return Optional.of(ItemDtoMapper.mapToDto(item));

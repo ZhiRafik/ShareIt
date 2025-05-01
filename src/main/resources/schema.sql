@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS items
     description varchar(255) NOT NULL,
     available BOOLEAN NOT NULL,
     times_used BIGINT,
+    request_id BIGINT,
     CONSTRAINT pk_item PRIMARY KEY (id),
+    FOREIGN KEY (request_id) references requests (id) ON DELETE CASCADE,
     FOREIGN KEY (owner_id) references users (id) ON DELETE CASCADE
 );
 
@@ -37,4 +39,13 @@ CREATE TABLE IF NOT EXISTS comments
     created TIMESTAMP(0),
     FOREIGN KEY (item_id) references items (id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) references users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS requests
+(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    description varchar(512) NOT NULL,
+    created TIMESTAMP(0),
+    FOREIGN KEY (user_id) references users (id) ON DELETE CASCADE
 );
