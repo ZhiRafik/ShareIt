@@ -1,6 +1,5 @@
 package shareit.user;
 
-import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,8 +14,8 @@ import lombok.experimental.FieldDefaults;
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Email @NotBlank @Column(length = 512, nullable = false)
+    @Column(length = 512, nullable = false)
     String email;
-    @NotBlank @NotNull @Column(unique = true)
+    @Column(unique = true)
     String name;
 }

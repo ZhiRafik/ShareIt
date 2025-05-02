@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class RequestController {
     private final RequestClient requestClient;
-    private final String xUserId = "X-Sharer-User-Id";
+    private static final String xUserId = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<Object> addRequest(String description,

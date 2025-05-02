@@ -1,6 +1,5 @@
 package shareit.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import shareit.exception.ConflictException;
@@ -15,7 +14,7 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public UserDto save(@Valid @RequestBody UserDto dto) {
+    public UserDto save(@RequestBody UserDto dto) {
         return service.saveUser(dto)
                 .orElseThrow(() -> new ConflictException("User with such an email already exists"));
     }

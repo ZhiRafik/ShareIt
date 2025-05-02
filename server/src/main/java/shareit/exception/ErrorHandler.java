@@ -5,35 +5,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
-
 @RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFound(NotFoundException ex) {
-        return Map.of(
-                "error", "Not found",
-                "message", ex.getMessage()
-        );
+    public ErrorResponse handleNotFound(NotFoundException ex) {
+        return new ErrorResponse("NOT FOUND", ex.getMessage());
     }
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleConflict(ConflictException ex) {
-        return Map.of(
-                "error", "Conflict",
-                "message", ex.getMessage()
-        );
+    public ErrorResponse handleConflict(ConflictException ex) {
+        return new ErrorResponse("CONFLICT", ex.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleBadRequest(BadRequestException ex) {
-        return Map.of(
-                "error", "Bad Request",
-                "message", ex.getMessage()
-        );
+    public ErrorResponse handleBadRequest(BadRequestException ex) {
+        return new ErrorResponse("BAD REQUEST", ex.getMessage());
+    }
+
+    @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleOtherErrors(Throwable ex) {
+        return new ErrorResponse("INTERNAL SERVER ERROR", ex.getMessage());
     }
 }

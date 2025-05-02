@@ -1,6 +1,5 @@
 package shareit.item;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import shareit.exception.BadRequestException;
@@ -16,14 +15,14 @@ public class ItemController {
     private final String xUserId = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto addItem(@Valid @RequestBody ItemDto dto,
+    public ItemDto addItem(@RequestBody ItemDto dto,
                            @RequestHeader(name = xUserId) Long ownerId) {
         return service.addItem(dto, ownerId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
     }
 
     @PostMapping("/{itemId}/comment")
-    public Comment addComment(@Valid @RequestBody Comment comment,
+    public Comment addComment(@RequestBody Comment comment,
                               @PathVariable Long itemId,
                               @RequestHeader(name = xUserId) Long userId) {
         return service.addComment(comment, itemId, userId)
@@ -31,7 +30,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@Valid @RequestBody ItemDto dto,
+    public ItemDto updateItem(@RequestBody ItemDto dto,
                               @PathVariable Long itemId,
                               @RequestHeader(name = xUserId) Long userId) {
         return service.updateItem(dto, itemId, userId)

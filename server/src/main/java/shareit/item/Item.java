@@ -2,8 +2,6 @@ package shareit.item;
 
 import lombok.*;
 import shareit.user.User;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,13 +15,12 @@ import lombok.experimental.FieldDefaults;
 public class Item {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @NotNull @ManyToOne @JoinColumn(name = "owner_id")
+    @ManyToOne @JoinColumn(name = "owner_id")
     User owner;
-    @NotBlank @Column(nullable = false)
+    @Column(nullable = false)
     String name;
-    @NotBlank @Column(nullable = false)
+    @Column(nullable = false)
     String description;
-    @NotNull
     Boolean available;
     Long timesUsed;
     @Column(name = "request_id")

@@ -1,7 +1,6 @@
 package shareit.booking;
 
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,9 +19,9 @@ import java.time.LocalDateTime;
 public class Booking {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @NotNull @ManyToOne @JoinColumn(name = "item_id")
+    @ManyToOne @JoinColumn(name = "item_id")
     Item item;
-    @NotNull @ManyToOne @JoinColumn(name = "booker_id")
+    @ManyToOne @JoinColumn(name = "booker_id")
     User booker;
     LocalDateTime start;
     @Column(name = "\"end\"")

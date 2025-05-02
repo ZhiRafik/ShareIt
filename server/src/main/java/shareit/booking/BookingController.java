@@ -1,6 +1,5 @@
 package shareit.booking;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,7 @@ public class BookingController {
     private final String xUserId = "X-Sharer-User-Id";
 
     @PostMapping
-    public Booking addBooking(@Valid @RequestBody BookingRequestDto bookingRequest,
+    public Booking addBooking(@RequestBody BookingRequestDto bookingRequest,
                               @RequestHeader (name = xUserId) Long userId) {
         return service.addBooking(bookingRequest, userId);
     }
